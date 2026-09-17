@@ -12,7 +12,17 @@ from app.models import User
 router = APIRouter(prefix="/uploads", tags=["Uploads"])
 
 UPLOAD_DIR = settings.upload_dir
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def ensure_upload_dir() -> None:
+    """Create the upload directory on demand, with a clear error if unwritable."""
+    try:
+        UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Upload directory is not writable: {UPLOAD_DIR}",
+        ) from exc
 
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
@@ -24,6 +34,7 @@ async def upload_image(
     current_user: User = Depends(get_current_user),
 ) -> dict:
     """Store an uploaded image and return its public URL path."""
+    ensure_upload_dir()
     extension = Path(file.filename or "").suffix.lower()
     if file.content_type not in ALLOWED_TYPES and extension not in ALLOWED_EXT:
         raise HTTPException(

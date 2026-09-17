@@ -29,7 +29,10 @@ from app.api.routers import (
 )
 
 UPLOAD_DIR = settings.upload_dir
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+try:
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 
 @asynccontextmanager
@@ -63,7 +66,7 @@ app.add_middleware(
 )
 
 # Serve uploaded images.
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR, check_dir=False), name="uploads")
 
 # API routers.
 prefix = settings.API_PREFIX
