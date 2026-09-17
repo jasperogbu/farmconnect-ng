@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { Loader2, Sprout } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Sprout } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -16,6 +16,7 @@ export default function Login() {
   const location = useLocation()
   const [form, setForm] = useState({ username: '', password: '' })
   const [submitting, setSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -56,7 +57,6 @@ export default function Login() {
               <Input
                 id="username"
                 autoComplete="username"
-                placeholder="e.g. musa_farms"
                 value={form.username}
                 onChange={(event) => update('username', event.target.value)}
                 required
@@ -64,15 +64,26 @@ export default function Login() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                value={form.password}
-                onChange={(event) => update('password', event.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  className="pr-10"
+                  value={form.password}
+                  onChange={(event) => update('password', event.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
             <Button type="submit" className="w-full" disabled={submitting}>
               {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -86,13 +97,6 @@ export default function Login() {
               Create one
             </Link>
           </p>
-
-          <div className="mt-6 rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
-            <p className="font-medium text-foreground">Demo accounts</p>
-            <p className="mt-1">Farmer — musa_farms / password123</p>
-            <p>Buyer — chinedu_buys / password123</p>
-            <p>Admin — admin / Admin@123</p>
-          </div>
         </CardContent>
       </Card>
     </div>
