@@ -47,6 +47,9 @@ class Settings(BaseSettings):
 
     # File uploads
     MAX_UPLOAD_MB: int = 5
+    # Optional absolute path for uploaded images (e.g. a mounted disk on Render).
+    # Defaults to <backend>/uploads when empty.
+    UPLOAD_DIR: str = ""
 
     @property
     def is_sqlite(self) -> bool:
@@ -55,7 +58,7 @@ class Settings(BaseSettings):
     @property
     def upload_dir(self) -> Path:
         """Absolute path to the directory that stores uploaded images."""
-        return BASE_DIR / "uploads"
+        return Path(self.UPLOAD_DIR) if self.UPLOAD_DIR else BASE_DIR / "uploads"
 
 
 @lru_cache
