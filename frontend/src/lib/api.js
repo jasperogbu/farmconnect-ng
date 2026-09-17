@@ -1,9 +1,10 @@
 import axios from 'axios'
+import { normalizeApiBase } from '@/lib/utils'
 
 export const TOKEN_KEY = 'farmconnect_token'
 export const USER_KEY = 'farmconnect_user'
 
-const baseURL = import.meta.env.VITE_API_URL || '/api'
+const baseURL = normalizeApiBase(import.meta.env.VITE_API_URL) || '/api'
 
 export const api = axios.create({ baseURL })
 

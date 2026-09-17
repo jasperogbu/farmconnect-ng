@@ -39,7 +39,13 @@ export function homeForRole(role) {
   return '/buyer'
 }
 
-const API_ORIGIN = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '')
+export function normalizeApiBase(value) {
+  const raw = (value || '').trim().replace(/^['"]+|['"]+$/g, '')
+  if (!raw) return ''
+  return raw.replace(/\/+$/, '')
+}
+
+const API_ORIGIN = normalizeApiBase(import.meta.env.VITE_API_URL).replace(/\/api$/i, '')
 
 export function resolveImage(url) {
   if (!url) return null
