@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 150 10% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 10% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 10% 12%;
+
+    --primary: 142 71% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 142 30% 96%;
+    --secondary-foreground: 142 71% 20%;
+
+    --muted: 150 10% 96%;
+    --muted-foreground: 150 6% 45%;
+
+    --accent: 142 40% 94%;
+    --accent-foreground: 142 71% 22%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 8% 90%;
+    --input: 150 8% 90%;
+    --ring: 142 71% 30%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 150 20% 7%;
+    --foreground: 150 10% 96%;
+    --card: 150 18% 10%;
+    --card-foreground: 150 10% 96%;
+    --popover: 150 18% 10%;
+    --popover-foreground: 150 10% 96%;
+    --primary: 142 60% 45%;
+    --primary-foreground: 150 20% 8%;
+    --secondary: 150 14% 18%;
+    --secondary-foreground: 150 10% 96%;
+    --muted: 150 14% 18%;
+    --muted-foreground: 150 8% 65%;
+    --accent: 150 14% 20%;
+    --accent-foreground: 150 10% 96%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 150 12% 22%;
+    --input: 150 12% 22%;
+    --ring: 142 60% 45%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}
+
+@layer utilities {
+  .leaflet-container {
+    @apply z-0 h-full w-full;
+    font-family: inherit;
+  }
+}
