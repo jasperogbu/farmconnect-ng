@@ -205,11 +205,22 @@ Base URL: `/api`
 
 - `.env` is gitignored — set its values as environment variables on your host
   (for example Render's dashboard).
-- Mount a **persistent disk** for the SQLite database and the `backend/uploads/` directory,
-  otherwise data and images reset on each deploy. The bootstrap admin is recreated on boot
-  regardless.
+- **Use a managed Postgres in production.** The container filesystem is ephemeral:
+  on Render's free tier it resets on every restart, spin-down/wake and redeploy, so a
+  SQLite database (and `backend/uploads/`) is wiped and every registered account is
+  lost — users then see `Incorrect username or password.` on login. Set `DATABASE_URL`
+  to a Postgres URL (e.g. Neon's free tier); bare `postgres://` and `postgresql://`
+  URLs are accepted and rewritten to `postgresql+psycopg://` automatically. Mounting a
+  persistent disk is only possible on paid plans.
+- Uploaded images are still stored on the ephemeral filesystem. Point `UPLOAD_DIR` at a
+  mounted disk (paid plans) or move uploads to object storage before relying on them.
+- The bootstrap admin is created on boot from `ADMIN_USERNAME` / `ADMIN_PASSWORD`, and
+  is only re-hashed when the account is first created — changing `ADMIN_PASSWORD` later
+  does not update an existing admin. Use `create_admin.py` for that.
 - Set `FRONTEND_URL` to the deployed frontend origin (CORS) and `VITE_API_URL` to the
-  deployed API base URL (e.g. `https://your-backend.onrender.com/api`).
+  deployed API base URL (e.g. `https://your-backend.onrender.com/api`). Vite inlines
+  `VITE_*` variables at **build time**, so the frontend must be rebuilt for a change
+  to take effect.
 
 ---
 

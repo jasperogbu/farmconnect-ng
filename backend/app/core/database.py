@@ -6,12 +6,23 @@ from sqlmodel import Session, SQLModel, create_engine
 
 from .config import settings
 
-_connect_args = {"check_same_thread": False} if settings.is_sqlite else {}
+if settings.is_sqlite:
+    _connect_args = {"check_same_thread": False}
+    _engine_kwargs: dict = {}
+else:
+    # Server-side prepared statements are not safe behind a transaction-pooling
+    # PgBouncer (Neon's -pooler endpoint): one client's prepared statement can be
+    # reused by another, failing with "prepared statement already exists".
+    _connect_args = {"prepare_threshold": None}
+    # Managed Postgres drops idle connections when the compute suspends, so
+    # pre-ping discards dead ones instead of surfacing them as request errors.
+    _engine_kwargs = {"pool_pre_ping": True}
 
 engine = create_engine(
     settings.DATABASE_URL,
     echo=False,
     connect_args=_connect_args,
+    **_engine_kwargs,
 )
 
 

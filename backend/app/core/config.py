@@ -3,6 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -35,6 +36,21 @@ class Settings(BaseSettings):
 
     # Database
     DATABASE_URL: str = "sqlite:///./farmconnect.db"
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def _normalize_database_url(cls, value: str) -> str:
+        """Qualify bare Postgres URLs with the bundled psycopg driver.
+
+        Managed providers hand out ``postgres://`` (Render) or ``postgresql://``
+        (Neon) URLs, which SQLAlchemy refuses to resolve to a DBAPI. Pinning the
+        driver keeps ``DATABASE_URL`` a straight copy-paste from the dashboard.
+        """
+        if value.startswith("postgres://"):
+            return value.replace("postgres://", "postgresql+psycopg://", 1)
+        if value.startswith("postgresql://"):
+            return value.replace("postgresql://", "postgresql+psycopg://", 1)
+        return value
 
     # CORS
     FRONTEND_URL: str = "http://localhost:5173"
